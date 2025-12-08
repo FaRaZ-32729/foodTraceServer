@@ -1,32 +1,69 @@
-const nodemailer = require("nodemailer");
+// const nodemailer = require("nodemailer");
+// const path = require("path");
+// const dotenv = require("dotenv");
+// dotenv.config();
+
+// const sendEmail = async (to, subject, html) => {
+//     const transporter = nodemailer.createTransport({
+//         host: "smtp.gmail.com",
+//         port: 587,
+//         secure: false,
+//         auth: {
+//             user: process.env.EMAIL_USER,
+//             pass: process.env.EMAIL_PASS,
+//         },
+//     });
+
+//     await transporter.sendMail({
+//         from: `"FrostKontroll" <${process.env.EMAIL_USER}>`,
+//         to,
+//         subject,
+//         html,
+//         attachments: [
+//             {
+//                 filename: "logo.png",
+//                 path: path.join(__dirname, "../assets/logo.png"), 
+//                 cid: "companyLogo", 
+//             },
+//         ],
+//     });
+// };
+
+// module.exports = sendEmail;
+
+const formData = require("form-data");
+const Mailgun = require("mailgun.js");
+const fs = require("fs");
 const path = require("path");
-const dotenv = require("dotenv");
-dotenv.config();
+
+const mailgun = new Mailgun(formData);
+const mg = mailgun.client({
+    username: "api",
+    key: process.env.MAILGUN_API_KEY
+});
 
 const sendEmail = async (to, subject, html) => {
-    const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-        },
-    });
+    try {
+        await mg.messages.create(process.env.MAILGUN_DOMAIN, {
+            from: `FrostKontroll <support@odor.iotfiysolutions.com>`,
+            to,
+            subject,
+            html,
 
-    await transporter.sendMail({
-        from: `"FrostKontroll" <${process.env.EMAIL_USER}>`,
-        to,
-        subject,
-        html,
-        attachments: [
-            {
-                filename: "logo.png",
-                path: path.join(__dirname, "../assets/logo.png"), 
-                cid: "companyLogo", 
-            },
-        ],
-    });
+            // Attach inline image similar to Nodemailer "cid"
+            inline: [
+                {
+                    filename: "logo.png",
+                    data: fs.createReadStream(path.join(__dirname, "../assets/logo.png")),
+                    knownLength: fs.statSync(path.join(__dirname, "../assets/logo.png")).size
+                }
+            ]
+        });
+
+        console.log("Email sent ✔");
+    } catch (err) {
+        console.error("Mailgun error:", err);
+    }
 };
 
 module.exports = sendEmail;
