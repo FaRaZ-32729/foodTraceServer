@@ -75,6 +75,8 @@ app.get("/ping", (req, res) => {
     res.send("✅ Backend is reachable");
 });
 
+app.get("/", (req, res) => { res.send("HELLOW FARAZ") });
+
 // Start server
 server.listen(port, "0.0.0.0", () => {
     console.log(`🚀 Express & Socket.IO running on port: ${port}`);
