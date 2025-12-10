@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String },
     role: { type: String, enum: ["admin", "user"], default: "user" },
-    organization: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization', required: true },
+    organization: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization' },
     isActive: { type: Boolean, default: false },
     isVerified: { type: Boolean, default: false },
     suspensionReason: { type: String, default: "" },

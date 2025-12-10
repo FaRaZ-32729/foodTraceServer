@@ -9,7 +9,7 @@ const organizationModel = require("../models/organizationModel");
 const registerAdmin = async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        if (!name || !email, !password) return res.status(400).json({ message: "All Fields Are Required" });
+        if (!name || !email || !password) return res.status(400).json({ message: "All Fields Are Required" });
 
         const passwordRegex =
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -31,6 +31,7 @@ const registerAdmin = async (req, res) => {
             email,
             password: hashedPassword,
             role: "admin",
+            organization: null,
             isActive: true,
             isVerified: true
         });
@@ -38,6 +39,7 @@ const registerAdmin = async (req, res) => {
         return res.status(201).json({ message: "Admin Created Successfully", Admin: newAdmin })
     } catch (error) {
         console.log(error.message, "error occured while creating admin");
+        return res.status(500).json({ message: "Failed to create Admin" })
     }
 }
 
